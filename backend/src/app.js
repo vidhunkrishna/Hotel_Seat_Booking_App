@@ -1,0 +1,25 @@
+import express from "express";
+import cors from "cors";
+import { router } from "./routes/auth.route.js";
+import { hotelRouter } from "./routes/hotel.route.js";
+import { tableRouter } from "./routes/table.route.js";
+import { bookingRouter } from "./routes/bookings.route.js";
+import { reviewRouter } from "./routes/reviews.route.js";
+import { notificationRouter } from "./routes/notifications.route.js";
+import { paymentsRouter } from "./routes/payments.route.js";
+import { qrRouter } from "./routes/qr.route.js";
+import { analyticsRouter } from "./routes/analytics.route.js";
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+app.use("/api", router);
+app.use("/api/hotels", hotelRouter);
+app.use("/api", tableRouter);
+app.use("/api", bookingRouter);
+app.use("/api", reviewRouter);
+app.use("/api", notificationRouter);
+app.use("/api", paymentsRouter);
+app.use("/api", qrRouter);
+app.use("/api", analyticsRouter);
+export default app;
