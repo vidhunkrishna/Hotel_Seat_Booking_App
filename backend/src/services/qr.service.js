@@ -50,7 +50,6 @@ export const VerifyQR = async (userId, userRole, bookingId) => {
     throw new Error("QR has already been verified");
   }
 
-  // Only super_admin can verify bookings from any hotel
   if (userRole !== "super_admin") {
     const hotel = await hotelModel.findById(booking.hotel);
 

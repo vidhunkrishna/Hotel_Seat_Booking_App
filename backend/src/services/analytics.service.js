@@ -4,14 +4,12 @@ import { reviewModel } from "../models/reviews.model.js";
 import { hotelModel } from "../models/hotel.model.js";
 
 export const GetAnalytics = async (userId, userRole, hotelId) => {
-  // Check hotel
   const hotel = await hotelModel.findById(hotelId);
 
   if (!hotel) {
     throw new Error("Hotel not found");
   }
 
-  // Check ownership
   if (userRole !== "super_admin" && hotel.admin.toString() !== userId) {
     const error = new Error("You are not allowed to view this analytics");
 
@@ -19,12 +17,10 @@ export const GetAnalytics = async (userId, userRole, hotelId) => {
     throw error;
   }
 
-  // Get bookings
   const bookings = await bookingsModel.find({
     hotel: hotelId,
   });
 
-  // Count booking statuses
   const totalBookings = bookings.length;
 
   const confirmedBookings = bookings.filter(
@@ -43,7 +39,6 @@ export const GetAnalytics = async (userId, userRole, hotelId) => {
     (booking) => booking.status === "Completed",
   ).length;
 
-  // Calculate revenue
   const totalRevenue = bookings
     .filter(
       (booking) =>
@@ -51,12 +46,10 @@ export const GetAnalytics = async (userId, userRole, hotelId) => {
     )
     .reduce((total, booking) => total + (booking.amount || 0), 0);
 
-  // Tables
   const totalTables = await tableModel.countDocuments({
     hotel: hotelId,
   });
 
-  // Reviews
   const reviews = await reviewModel.find({
     hotel: hotelId,
   });
