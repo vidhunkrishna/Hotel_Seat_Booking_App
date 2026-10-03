@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 export const RegisterUser = async (data) => {
   const { name, email, password } = data;
   const hashedpassword = await bcrypt.hash(password, 10);
-  const dat = await userModel.create({ name, email, password: hashedpassword })
+  const dat = await userModel.create({ name, email, password: hashedpassword });
   return dat;
 };
 export const LoginUser = async (data) => {
