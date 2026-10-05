@@ -1,5 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { easeInOut, easeOut, motion } from "framer-motion";
+import {
+  Calendar,
+  Compass,
+  Sparkle,
+  Sparkles,
+  TicketCheck,
+  User,
+  Utensils,
+} from "lucide-react";
+import Goldenbutton from "../components/layout/goldenbutton.jsx";
 function Dashboard() {
   const navigate = useNavigate();
   return (
@@ -32,16 +42,7 @@ function Dashboard() {
               dining experience memorable.
             </div>
           </motion.div>
-          <motion.button
-            initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, delay: 0.4 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="text-center bg-yellow-600/55 px-4 py-2 mt-3 rounded-xl hover:bg-yellow-700/50"
-          >
-            Explore Hotels
-          </motion.button>
+          <Goldenbutton name="Explore Hotels" />
         </div>
         <motion.div
           className="w-full md:flex-1 flex justify-center"
@@ -56,9 +57,9 @@ function Dashboard() {
           />
         </motion.div>
       </div>
-      <div className="grid m-3 grid-cols-3 gap-2 ">
-        <div className="col-span-2 bg-[#FFFFFF] border-[#E5E1D8] border-[1px] rounded-[20px] min-h-[260px] p-6">
-          <div className="flex flex-row">
+      <div className="grid m-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 ">
+        <div className=" col-span-1 md:col-span-2 bg-[#FFFFFF] border-[#E5E1D8] border-[1px] rounded-[20px] min-h-[260px] p-6">
+          <div className="flex flex-col md:flex-row">
             <div className="flex-1">
               <div className="font-semibold text-sm text-[#C89B5A]">
                 DISCOVER
@@ -70,28 +71,70 @@ function Dashboard() {
                 Explore hotels, check table availability, and reserve your
                 preferred spot.
               </div>
-              <motion.button
-                initial={{ opacity: 0, x: -40 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 1, delay: 0.4 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="text-center bg-yellow-600/55 px-4 py-2 mt-3 rounded-xl hover:bg-yellow-700/50"
-              >
-                Explore Hotels
-              </motion.button>
+              <Goldenbutton name="Explore Hotels" />
             </div>
             <div>
-              <img src="table.jpg" className="w-100 h-60 rounded-2xl" />
+              <img
+                src="table.jpg"
+                className="w-full md:w-[400px] h-[220px] md:h-[240px] object-cover rounded-2xl"
+              />
             </div>
           </div>
         </div>
-        <div className="col-span-1 bg-red-500 min-h-[260px]">
-          Upcoming Bookings
+        <div className="col-span-1 bg-[#FFFFFF] border-[#E5E1D8] border-[1px] rounded-[20px] min-h-[260px] p-6">
+          <div className="flex gap-1 items-center">
+            <Calendar color="#C89B5A" size={16} />
+            <p className="font-semibold text-[#C89B5A] text-sm">
+              UPCOMING BOOKINGS
+            </p>
+          </div>
+          <div className="text-xl font-ui font-bold text-[#171717]">
+            No upcoming bookings
+          </div>
+          <div className="text-base text-[#6B6B6B]">
+            Your next reservation will appear here.
+          </div>
+          <Goldenbutton name="View My Bookings" />
         </div>
-        <div className="col-span-1 bg-red-500 min-h-[160px]">Bookings</div>
-        <div className="col-span-1 bg-red-500 min-h-[160px]">Notifications</div>
-        <div className="col-span-1 bg-red-500 min-h-[160px]">Profile</div>
+        <div className="col-span-1 bg-[#FFFFFF] border-[#E5E1D8] border-[1px] rounded-[20px] p-6 min-h-[160px]">
+          <div className="flex gap-1 items-center">
+            <TicketCheck color="#C89B5A" size={16} />
+            <p className="font-semibold text-[#C89B5A] text-sm">
+              BOOKING SUMMARY
+            </p>
+          </div>
+          <div className="text-xl font-ui font-bold text-[#171717]">
+            Your Reservations
+          </div>
+          <div className="text-base text-[#6B6B6B]">No reservations yet</div>
+        </div>
+        <div className="col-span-1 bg-[#FFFFFF] border-[#E5E1D8] border-[1px] rounded-[20px] p-6 min-h-[160px]">
+          <div className="flex gap-1 items-center">
+            <Utensils color="#C89B5A" size={16} />
+            <p className="font-semibold text-[#C89B5A] text-sm">
+              DINING ACTIVITY
+            </p>
+          </div>
+          <div className="text-xl font-ui font-bold text-[#171717]">
+            Your Dining Journey
+          </div>
+          <div className="text-base text-[#6B6B6B]">
+            Start exploring hotels to build your reservation history.
+          </div>
+        </div>
+        <div className="col-span-1 bg-[#FFFFFF] border-[#E5E1D8] border-[1px] rounded-[20px] p-6 min-h-[160px]">
+          <div className="flex gap-1 items-center">
+            <Compass color="#C89B5A" size={16} />
+            <p className="font-semibold text-[#C89B5A] text-sm">FOR YOU</p>
+          </div>
+          <div className="text-xl font-ui font-bold text-[#171717]">
+            Discover Something New
+          </div>
+          <div className="text-base text-[#6B6B6B]">
+            Explore available hotels and find a table for your next experience.
+          </div>
+          <Goldenbutton name="Explore Hotels" />
+        </div>
       </div>
     </>
   );

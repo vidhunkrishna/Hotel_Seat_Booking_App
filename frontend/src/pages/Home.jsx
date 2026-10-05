@@ -1,6 +1,7 @@
 import { easeIn, motion } from "framer-motion";
 import Hotelcard from "../components/hotel/Hotelcard.jsx";
 import { ArrowRight } from "lucide-react";
+import Goldenbutton from "../components/layout/goldenbutton.jsx";
 export default function Home() {
   const hotels = [
     {
@@ -57,16 +58,7 @@ export default function Home() {
             >
               Reserve your favorite table at premium hotels.
             </motion.p>
-            <motion.button
-              initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="text-center bg-yellow-600/55 px-6 py-2 mt-3 rounded-xl hover:bg-yellow-700/50"
-            >
-              Explore Hotels
-            </motion.button>
+            <Goldenbutton name="Explore Hotels" />
           </div>
         </div>
       </div>
@@ -202,13 +194,7 @@ export default function Home() {
             reservation with ease.
           </p>
 
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="mt-8 rounded-xl bg-[#C89B5A] px-7 py-3 font-semibold text-white hover:bg-[#B88746]"
-          >
-            Explore Hotels
-          </motion.button>
+          <Goldenbutton name="Explore Hotels" />
         </motion.div>
       </section>
     </>
