@@ -195,7 +195,7 @@ function Dashboard() {
           </div>
 
           <div className="text-base text-[#6B6B6B]">
-            Explore available hotels and find a table for your next experience.
+            Explore available hotels and find a table for your next experience
           </div>
 
           <Goldenbutton name="Explore Hotels" />
