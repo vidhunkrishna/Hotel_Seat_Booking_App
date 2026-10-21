@@ -10,13 +10,13 @@ function Hotelcard({ hotel }) {
       className="hover:shadow-xl rounded-2xl"
     >
       <img
-        src={hotel.image}
+        src={hotel.imageurl}
         alt={hotel.name}
         className="h-52 w-full object-cover rounded-2xl"
       />
       <div className="p-5">
         <h3 className="font-bold text-xl">{hotel.name}</h3>
-        <p className="mt-1 text-gray-500">{hotel.location}</p>
+        <p className="mt-1 text-gray-500">{hotel.address}</p>
 
         <p className="mt-3 text-gray-600">{hotel.description}</p>
 

@@ -7,6 +7,10 @@ export const hotelschema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    imageurl: {
+      type: String,
+      required: false,
+    },
     description: {
       type: String,
     },
