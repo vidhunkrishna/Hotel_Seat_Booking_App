@@ -1,25 +1,39 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { easeInOut, easeOut, motion } from "framer-motion";
 import { Calendar, Compass, TicketCheck, Utensils } from "lucide-react";
 import Goldenbutton from "../components/layout/goldenbutton.jsx";
 
 function Dashboard() {
   const navigate = useNavigate();
-
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    setTimeout(() => {
+      navigate("/login");
+    }, 1000);
+  };
   return (
     <>
       <div className="bg-[#171717] w-full h-[54px] flex flex-row items-center ">
         <p className="text-white m-4 font-display">HotelSeatBooking</p>
 
         <div className="flex ml-auto mr-4 text-white font-ui ">
-          <p className="mr-4">Hotels</p>
-          <p className="mr-4">My Bookings</p>
-          <p className="mr-4">Notifications </p>
-          <p className="mr-4">Profile</p>
+          <Link className="mr-4" to="/hotels">
+            Hotels
+          </Link>
+          <Link className="mr-4" to="/bookings">
+            My Bookings
+          </Link>
+          <Link className="mr-4" to="/notifications">
+            Notifications{" "}
+          </Link>
+          <Link className="mr-4" to="/profile">
+            Profile
+          </Link>
 
           <button
             className="cursor-pointer hover:text-yellow-600"
-            onClick={() => navigate("/login")}
+            onClick={() => logout()}
           >
             Logout
           </button>
@@ -41,7 +55,7 @@ function Dashboard() {
             </div>
           </motion.div>
 
-          <Goldenbutton name="Explore Hotels" />
+          <Goldenbutton name="Explore Hotels" l="/hotels" />
         </div>
 
         <motion.div
@@ -87,7 +101,7 @@ function Dashboard() {
                 preferred spot.
               </div>
 
-              <Goldenbutton name="Explore Hotels" />
+              <Goldenbutton name="Explore Hotels" l="/hotels" />
             </div>
 
             <div className="overflow-hidden rounded-2xl">
@@ -125,7 +139,7 @@ function Dashboard() {
             Your next reservation will appear here.
           </div>
 
-          <Goldenbutton name="View My Bookings" />
+          <Goldenbutton name="View My Bookings" l="/bookings" />
         </motion.div>
 
         <motion.div
@@ -198,7 +212,7 @@ function Dashboard() {
             Explore available hotels and find a table for your next experience
           </div>
 
-          <Goldenbutton name="Explore Hotels" />
+          <Goldenbutton name="Explore Hotels" l="/hotels" />
         </motion.div>
       </div>
     </>

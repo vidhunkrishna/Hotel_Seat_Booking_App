@@ -7,6 +7,7 @@ import Register from "./pages/Register.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Pagetransition from "./components/layout/Pagetransition.jsx";
 import ProtectedRoutes from "./components/security/ProtectedRoutes.jsx";
+import Hotel from "./pages/Hotel.jsx";
 function App() {
   return (
     <>
@@ -44,6 +45,38 @@ function App() {
               element={
                 <Pagetransition>
                   <Dashboard />
+                </Pagetransition>
+              }
+            />
+            <Route
+              path="/hotels"
+              element={
+                <Pagetransition>
+                  <Hotel />
+                </Pagetransition>
+              }
+            />
+            <Route
+              path="/notifications"
+              element={
+                <Pagetransition>
+                  <Hotel />
+                </Pagetransition>
+              }
+            />
+            <Route
+              path="/bookings"
+              element={
+                <Pagetransition>
+                  <Hotel />
+                </Pagetransition>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <Pagetransition>
+                  <Hotel />
                 </Pagetransition>
               }
             />

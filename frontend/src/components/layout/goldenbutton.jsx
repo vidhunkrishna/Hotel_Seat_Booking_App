@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
-function Goldenbutton({ name }) {
+import { useNavigate } from "react-router-dom";
+function Goldenbutton({ name, l }) {
+  const navigate = useNavigate();
   return (
     <motion.button
       initial={{ opacity: 0, x: -40 }}
@@ -8,6 +10,7 @@ function Goldenbutton({ name }) {
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       className="text-center bg-yellow-600/55 px-4 py-2 mt-3 rounded-xl hover:bg-yellow-700/50"
+      onClick={() => navigate(l)}
     >
       {name}
     </motion.button>
