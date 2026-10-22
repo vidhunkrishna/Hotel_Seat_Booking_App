@@ -43,6 +43,10 @@ export const hotelschema = mongoose.Schema(
       ref: "User",
       required: true,
     },
+    rating: {
+      type: Number,
+      required: true,
+    },
   },
   {
     timestamps: true,

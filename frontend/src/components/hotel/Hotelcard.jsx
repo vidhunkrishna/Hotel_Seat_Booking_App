@@ -1,5 +1,7 @@
 import { easeIn, motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 function Hotelcard({ hotel }) {
+  const navigate = useNavigate();
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -10,13 +12,15 @@ function Hotelcard({ hotel }) {
       className="hover:shadow-xl rounded-2xl"
     >
       <img
-        src={hotel.imageurl}
+        src={hotel.imageurl || "/back.jpg"}
         alt={hotel.name}
         className="h-52 w-full object-cover rounded-2xl"
       />
       <div className="p-5">
         <h3 className="font-bold text-xl">{hotel.name}</h3>
-        <p className="mt-1 text-gray-500">{hotel.address}</p>
+        <p className="mt-1 text-gray-500">
+          {hotel.address.city},{hotel.address.state}
+        </p>
 
         <p className="mt-3 text-gray-600">{hotel.description}</p>
 
@@ -25,7 +29,10 @@ function Hotelcard({ hotel }) {
             ★ {hotel.rating}
           </span>
 
-          <button className="rounded-lg bg-[#C89B5A] px-4 py-2 text-white hover:bg-[#B88746]">
+          <button
+            className="rounded-lg bg-[#C89B5A] px-4 py-2 text-white hover:bg-[#B88746]"
+            onClick={() => navigate("/hotels")}
+          >
             View Hotel
           </button>
         </div>
