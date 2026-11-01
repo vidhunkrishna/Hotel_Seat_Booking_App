@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Pagetransition from "./components/layout/Pagetransition.jsx";
 import ProtectedRoutes from "./components/security/ProtectedRoutes.jsx";
 import Hotel from "./pages/Hotel.jsx";
+import HotelDetails from "./pages/HotelDetails.jsx";
 function App() {
   return (
     <>
@@ -77,6 +78,14 @@ function App() {
               element={
                 <Pagetransition>
                   <Hotel />
+                </Pagetransition>
+              }
+            />
+            <Route
+              path="/hotels/:id"
+              element={
+                <Pagetransition>
+                  <HotelDetails />
                 </Pagetransition>
               }
             />
