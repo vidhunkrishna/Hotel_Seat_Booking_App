@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import Tables from "./pages/Tables.jsx";
 import Pagetransition from "./components/layout/Pagetransition.jsx";
 import ProtectedRoutes from "./components/security/ProtectedRoutes.jsx";
 import Hotel from "./pages/Hotel.jsx";
@@ -89,6 +90,7 @@ function App() {
                 </Pagetransition>
               }
             />
+            <Route path="/hotels/:id/tables" element={<Tables />} />
           </Route>
         </Routes>
       </BrowserRouter>

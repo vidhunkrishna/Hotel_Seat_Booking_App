@@ -30,7 +30,7 @@ function Hotelcard({ hotel }) {
           </span>
 
           <button
-            className="rounded-lg bg-[#C89B5A] px-4 py-2 text-white hover:bg-[#B88746]"
+            className="rounded-lg bg-[#C89B5A] px-4 py-2 text-white hover:bg-[#B88746] cursor-pointer"
             onClick={() => navigate(`/hotels/${hotel._id}`)}
           >
             View Hotel

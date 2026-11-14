@@ -2,57 +2,33 @@ import { easeIn, motion } from "framer-motion";
 import Hotelcard from "../components/hotel/Hotelcard.jsx";
 import { ArrowRight } from "lucide-react";
 import Goldenbutton from "../components/layout/goldenbutton.jsx";
+import { useState, useEffect } from "react";
+import { gethotels } from "../services/hotelservice.js";
+
 export default function Home() {
-  const hotels = [
-    {
-      id: "mock_hotel_1",
-      name: "Taj Palace",
-      description: "Luxury dining and comfortable seating.",
-      imageurl: "https://images.unsplash.com/photo-1564501049412-61c2a3083791",
-      address: {
-        street: "Apollo Bunder",
-        city: "Mumbai",
-        state: "Maharashtra",
-        pincode: "400001",
-      },
-      contact: "9876543210",
-      openingTime: "09:00",
-      closingTime: "23:00",
-      status: "Active",
-    },
-    {
-      id: "mock_hotel_2",
-      name: "Grand Hyatt",
-      description: "A premium experience with beautiful spaces.",
-      imageurl: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa",
-      address: {
-        street: "Old Airport Road",
-        city: "Bengaluru",
-        state: "Karnataka",
-        pincode: "560008",
-      },
-      contact: "9876543211",
-      openingTime: "10:00",
-      closingTime: "22:00",
-      status: "Active",
-    },
-    {
-      id: "mock_hotel_3",
-      name: "ITC Grand",
-      description: "Elegant dining with a relaxing atmosphere.",
-      imageurl: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c",
-      address: {
-        street: "Mount Road",
-        city: "Chennai",
-        state: "Tamil Nadu",
-        pincode: "600002",
-      },
-      contact: "9876543212",
-      openingTime: "08:00",
-      closingTime: "23:00",
-      status: "Active",
-    },
-  ];
+  const [hotels, setHotels] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function fetchHotels() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const data = await gethotels();
+        setHotels(data.slice(0, 3));
+      } catch (e) {
+        console.error("Failed to fetch hotels:", e);
+        setError("Unable to load featured hotels.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchHotels();
+  }, []);
+
   return (
     <>
       <div className="relative h-[720px]">
@@ -66,7 +42,7 @@ export default function Home() {
           <div>
             <motion.h1
               initial={{ opacity: 0, y: 25 }}
-              className=" text-5xl font-bold"
+              className="text-5xl font-bold"
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
@@ -86,6 +62,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+
       <section className="bg-[#F7F5F0] px-8 py-16">
         <div className="mx-auto max-w-6xl">
           <div className="mb-10 text-center">
@@ -97,12 +74,23 @@ export default function Home() {
           </div>
 
           <div className="grid gap-8 md:grid-cols-3">
-            {hotels.map((hotel) => (
-              <Hotelcard key={hotel.id} hotel={hotel} />
-            ))}
+            {loading ? (
+              <p className="col-span-full text-center text-gray-500">
+                Loading featured hotels...
+              </p>
+            ) : error ? (
+              <p className="col-span-full text-center text-red-500">{error}</p>
+            ) : hotels.length === 0 ? (
+              <p className="col-span-full text-center text-gray-500">
+                No hotels available currently.
+              </p>
+            ) : (
+              hotels.map((hotel) => <Hotelcard key={hotel._id} hotel={hotel} />)
+            )}
           </div>
         </div>
       </section>
+
       <section className="bg-[#F7F5F0] px-8 py-16">
         <div className="text-center">
           <h1 className="text-4xl font-bold">How it works</h1>
@@ -110,6 +98,7 @@ export default function Home() {
             Book your perfect seat in 3 simple steps
           </p>
         </div>
+
         <div className="flex flex-row justify-center items-center">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -119,6 +108,7 @@ export default function Home() {
           >
             1 <p>Browse Hotels</p>
           </motion.div>
+
           <motion.div
             initial={{ opacity: 0, x: -10 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -126,6 +116,7 @@ export default function Home() {
           >
             <ArrowRight color="#C89B5A" size={24} />
           </motion.div>
+
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -134,6 +125,7 @@ export default function Home() {
           >
             2 <p>Choose your seat</p>
           </motion.div>
+
           <motion.div
             initial={{ opacity: 0, x: -10 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -141,6 +133,7 @@ export default function Home() {
           >
             <ArrowRight color="#C89B5A" size={24} />
           </motion.div>
+
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -151,6 +144,7 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
       <section className="bg-white px-8 py-16">
         <div className="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2">
           <motion.div
@@ -188,6 +182,7 @@ export default function Home() {
               </div>
             </div>
           </motion.div>
+
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -202,6 +197,7 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
       <section className="bg-[#171717] px-8 py-20 text-center text-white">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
