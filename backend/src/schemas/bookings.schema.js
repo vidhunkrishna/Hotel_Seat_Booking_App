@@ -14,11 +14,13 @@ export const bookingSchema = mongoose.Schema(
       required: true,
     },
 
-    table: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Table",
-      required: true,
-    },
+    tables: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Table",
+        required: true,
+      },
+    ],
 
     date: {
       type: String,
