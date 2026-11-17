@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.9.4",
     "qrcode": "^1.5.4",
+    "razorpay": "^2.9.8",
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.1"
   },

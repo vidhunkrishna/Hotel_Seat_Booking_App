@@ -16,8 +16,9 @@ export const verifypayment = async (req, res) => {
   try {
     const data = await Verifypayment(
       req.user.userId,
-      req.body.paymentId,
-      req.body.status,
+      req.body.razorpay_order_id,
+      req.body.razorpay_payment_id,
+      req.body.razorpay_signature,
     );
 
     res.status(200).json(data);

@@ -24,6 +24,15 @@ export const paymentSchema = mongoose.Schema(
       enum: ["Success", "Failed", "Pending"],
       default: "Pending",
     },
+    razorpayOrderId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    currency: {
+      type: String,
+      default: "INR",
+    },
   },
   {
     timestamps: true,

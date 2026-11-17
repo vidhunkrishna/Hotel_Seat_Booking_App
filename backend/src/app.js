@@ -9,10 +9,11 @@ import { notificationRouter } from "./routes/notifications.route.js";
 import { paymentsRouter } from "./routes/payments.route.js";
 import { qrRouter } from "./routes/qr.route.js";
 import { analyticsRouter } from "./routes/analytics.route.js";
+import morgon from "express";
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+app.use(morgon("dev"));
 app.use("/api", router);
 app.use("/api/hotels", hotelRouter);
 app.use("/api", tableRouter);

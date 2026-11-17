@@ -1,7 +1,13 @@
+import mongoose from "mongoose";
 import { bookingsModel } from "../models/bookings.model.js";
 import { hotelModel } from "../models/hotel.model.js";
 import { tableModel } from "../models/table.model.js";
-
+import {
+  EnsureReservationLocks,
+  AcquireReservationLock,
+  ReleaseReservationLock,
+} from "./reservationlock.service.js";
+import { reservationLocksModel } from "../models/reservationLock.model.js";
 const populateBooking = (query) =>
   query
     .populate("hotel", "name imageurl address")
@@ -60,31 +66,39 @@ export const CreateBooking = async (userId, data) => {
     0,
   );
 
-  const overlappingBooking = await bookingsModel.findOne({
-    hotel: hotel,
-    tables: { $in: tables },
-    date: date,
-    status: { $ne: "Cancelled" },
-    startTime: { $lt: endTime },
-    endTime: { $gt: startTime },
-  });
-
-  if (overlappingBooking) {
-    throw new Error("One or more selected tables are already booked");
+  await EnsureReservationLocks(hotel, tables, date);
+  const session = await mongoose.startSession();
+  const bookingId = new mongoose.Types.ObjectId();
+  try {
+    await session.withTransaction(async () => {
+      const booking = new bookingsModel({
+        _id: bookingId,
+        user: userId,
+        hotel,
+        tables,
+        date,
+        startTime,
+        endTime,
+        guests,
+        amount,
+      });
+      await booking.save({ session });
+      for (const table of tables) {
+        await AcquireReservationLock(
+          session,
+          hotel,
+          table,
+          date,
+          startTime,
+          endTime,
+          bookingId,
+        );
+      }
+    });
+    return await populateBooking(bookingsModel.findById(bookingId));
+  } finally {
+    await session.endSession();
   }
-
-  const booking = await bookingsModel.create({
-    user: userId,
-    hotel,
-    tables,
-    date,
-    startTime,
-    endTime,
-    guests,
-    amount,
-  });
-
-  return await populateBooking(bookingsModel.findById(booking._id));
 };
 
 export const GetMyBookings = async (userId) => {
@@ -122,7 +136,7 @@ export const GetBookingById = async (userId, userRole, id) => {
 };
 
 export const CancelBooking = async (userId, id) => {
-  const booking = await bookingsModel.findOne({ _id: id });
+  const booking = await bookingsModel.findById(id);
 
   if (!booking) {
     throw new Error("No such booking exists");
@@ -132,9 +146,33 @@ export const CancelBooking = async (userId, id) => {
     throw new Error("You are not allowed to do this");
   }
 
-  return await populateBooking(
-    bookingsModel.findByIdAndUpdate(id, { status: "Cancelled" }, { new: true }),
-  );
+  if (booking.status === "Cancelled") {
+    throw new Error("Booking is already cancelled");
+  }
+
+  const session = await mongoose.startSession();
+
+  try {
+    await session.withTransaction(async () => {
+      await bookingsModel.findByIdAndUpdate(
+        id,
+        { status: "Cancelled" },
+        { new: true, session },
+      );
+
+      await ReleaseReservationLock(
+        session,
+        booking.hotel,
+        booking.tables,
+        booking.date,
+        booking._id,
+      );
+    });
+
+    return await populateBooking(bookingsModel.findById(id));
+  } finally {
+    await session.endSession();
+  }
 };
 
 export const GetHotelBookings = async (userId, userRole, hotelId) => {
@@ -181,6 +219,36 @@ export const UpdateBookingStatus = async (userId, userRole, id, status) => {
     }
   }
 
+  if (booking.status === "Cancelled") {
+    throw new Error("Cancelled bookings cannot be reactivated");
+  }
+
+  if (status === "Cancelled") {
+    const session = await mongoose.startSession();
+
+    try {
+      await session.withTransaction(async () => {
+        await bookingsModel.findByIdAndUpdate(
+          id,
+          { status: "Cancelled" },
+          { new: true, session },
+        );
+
+        await ReleaseReservationLock(
+          session,
+          booking.hotel,
+          booking.tables,
+          booking.date,
+          booking._id,
+        );
+      });
+
+      return await populateBooking(bookingsModel.findById(id));
+    } finally {
+      await session.endSession();
+    }
+  }
+
   return await populateBooking(
     bookingsModel.findByIdAndUpdate(id, { status }, { new: true }),
   );
@@ -198,20 +266,24 @@ export const GetAvailability = async (
     status: "Active",
   });
 
-  const bookings = await bookingsModel.find({
-    hotel: hotelId,
-    date: date,
-    status: { $ne: "Cancelled" },
-    startTime: { $lt: endTime },
-    endTime: { $gt: startTime },
-  });
+  const locks = await reservationLocksModel
+    .find({
+      hotel: hotelId,
+      date,
+      reservations: {
+        $elemMatch: {
+          status: { $ne: "Cancelled" },
+          startTime: { $lt: endTime },
+          endTime: { $gt: startTime },
+        },
+      },
+    })
+    .select("table");
 
-  const bookedTables = bookings.flatMap((booking) =>
-    (booking.tables || []).map((table) => table.toString()),
-  );
+  const bookedTableIds = new Set(locks.map((lock) => lock.table.toString()));
 
   const availableTables = tables.filter(
-    (table) => !bookedTables.includes(table._id.toString()),
+    (table) => !bookedTableIds.has(table._id.toString()),
   );
 
   return availableTables;
