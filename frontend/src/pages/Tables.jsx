@@ -177,7 +177,9 @@ function Tables() {
 
             <button
               className="w-full mt-6 bg-[#C89B5A] text-white py-3 rounded-lg font-semibold hover:bg-[#B88746] cursor-pointer"
-              onClick={() => navigate("")}
+              onClick={() =>
+                navigate("/hotels/booking", { state: { selectedtable, id } })
+              }
             >
               Continue to Booking
             </button>

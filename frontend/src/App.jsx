@@ -10,6 +10,7 @@ import Pagetransition from "./components/layout/Pagetransition.jsx";
 import ProtectedRoutes from "./components/security/ProtectedRoutes.jsx";
 import Hotel from "./pages/Hotel.jsx";
 import HotelDetails from "./pages/HotelDetails.jsx";
+import Booking from "./pages/Booking.jsx";
 function App() {
   return (
     <>
@@ -91,6 +92,14 @@ function App() {
               }
             />
             <Route path="/hotels/:id/tables" element={<Tables />} />
+            <Route
+              path="/hotels/booking"
+              element={
+                <Pagetransition>
+                  <Booking />
+                </Pagetransition>
+              }
+            />
           </Route>
         </Routes>
       </BrowserRouter>
