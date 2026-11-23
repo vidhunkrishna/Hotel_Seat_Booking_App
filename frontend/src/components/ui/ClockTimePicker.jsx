@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Popover,
   PopoverContent,
@@ -16,17 +16,37 @@ function ClockTimePicker({ value, onChange, label }) {
   const hours = Array.from({ length: 12 }, (_, i) => i + 1);
   const minutes = Array.from({ length: 12 }, (_, i) => i * 5);
 
+  useEffect(() => {
+    if (!open) return;
+
+    if (value) {
+      const [h, m] = value.split(":").map(Number);
+
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setHour(h % 12 || 12);
+      setMinute(m);
+      setPeriod(h >= 12 ? "PM" : "AM");
+    } else {
+      setHour(10);
+      setMinute(0);
+      setPeriod("AM");
+    }
+
+    setStage("hour");
+  }, [open, value]);
+
   const formattedTime = value
     ? (() => {
         const [h, m] = value.split(":").map(Number);
         const p = h >= 12 ? "PM" : "AM";
         const displayHour = h % 12 || 12;
+
         return `${displayHour}:${String(m).padStart(2, "0")} ${p}`;
       })()
     : "Select time";
 
-  const selectHour = (selectedHour) => {
-    setHour(selectedHour);
+  const selectHour = (hour) => {
+    setHour(hour);
     setStage("minute");
   };
 
@@ -37,18 +57,19 @@ function ClockTimePicker({ value, onChange, label }) {
   const saveTime = () => {
     let finalHour = hour % 12;
 
-    if (period === "PM") finalHour += 12;
+    if (period === "PM") {
+      finalHour += 12;
+    }
 
     onChange(
       `${String(finalHour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`,
     );
 
     setOpen(false);
-    setStage("hour");
   };
 
-  const clockPosition = (number, total, radius = 42) => {
-    const angle = (number / total) * 2 * Math.PI - Math.PI / 2;
+  const clockPosition = (index, total, radius = 42) => {
+    const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
 
     return {
       left: `${50 + radius * Math.cos(angle)}%`,
@@ -80,6 +101,7 @@ function ClockTimePicker({ value, onChange, label }) {
           {/* Selected time */}
           <div className="flex justify-center items-center gap-2 mb-4">
             <button
+              type="button"
               onClick={() => setStage("hour")}
               className={`text-3xl font-semibold ${
                 stage === "hour" ? "text-[#C89B5A]" : "text-gray-400"
@@ -91,6 +113,7 @@ function ClockTimePicker({ value, onChange, label }) {
             <span className="text-3xl">:</span>
 
             <button
+              type="button"
               onClick={() => setStage("minute")}
               className={`text-3xl font-semibold ${
                 stage === "minute" ? "text-[#C89B5A]" : "text-gray-400"
@@ -102,6 +125,7 @@ function ClockTimePicker({ value, onChange, label }) {
             <div className="flex flex-col gap-1 ml-2">
               {["AM", "PM"].map((p) => (
                 <button
+                  type="button"
                   key={p}
                   onClick={() => setPeriod(p)}
                   className={`text-xs px-2 py-1 rounded ${
@@ -125,47 +149,42 @@ function ClockTimePicker({ value, onChange, label }) {
             <div className="absolute inset-0 rounded-full border border-[#E5E1D8]" />
 
             {stage === "hour"
-              ? hours.map((h) => {
-                  const selected = hour === h;
-
-                  return (
-                    <button
-                      key={h}
-                      onClick={() => selectHour(h)}
-                      style={clockPosition(h % 12, 12)}
-                      className={`absolute -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full text-sm font-medium ${
-                        selected
-                          ? "bg-[#C89B5A] text-white"
-                          : "hover:bg-[#E9DCC8] text-gray-800"
-                      }`}
-                    >
-                      {h}
-                    </button>
-                  );
-                })
-              : minutes.map((m) => {
-                  const selected = minute === m;
-
-                  return (
-                    <button
-                      key={m}
-                      onClick={() => selectMinute(m)}
-                      style={clockPosition(m / 5, 12)}
-                      className={`absolute -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full text-sm font-medium ${
-                        selected
-                          ? "bg-[#C89B5A] text-white"
-                          : "hover:bg-[#E9DCC8] text-gray-800"
-                      }`}
-                    >
-                      {String(m).padStart(2, "0")}
-                    </button>
-                  );
-                })}
+              ? hours.map((h) => (
+                  <button
+                    type="button"
+                    key={h}
+                    onClick={() => selectHour(h)}
+                    style={clockPosition(h % 12, 12)}
+                    className={`absolute -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full text-sm font-medium ${
+                      hour === h
+                        ? "bg-[#C89B5A] text-white"
+                        : "hover:bg-[#E9DCC8] text-gray-800"
+                    }`}
+                  >
+                    {h}
+                  </button>
+                ))
+              : minutes.map((m) => (
+                  <button
+                    type="button"
+                    key={m}
+                    onClick={() => selectMinute(m)}
+                    style={clockPosition(m / 5, 12)}
+                    className={`absolute -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full text-sm font-medium ${
+                      minute === m
+                        ? "bg-[#C89B5A] text-white"
+                        : "hover:bg-[#E9DCC8] text-gray-800"
+                    }`}
+                  >
+                    {String(m).padStart(2, "0")}
+                  </button>
+                ))}
 
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-[#C89B5A]" />
           </div>
 
           <button
+            type="button"
             onClick={saveTime}
             className="w-full mt-4 bg-[#C89B5A] text-white rounded-lg py-2 hover:bg-[#B48746] transition-colors"
           >

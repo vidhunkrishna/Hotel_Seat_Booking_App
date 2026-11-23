@@ -11,6 +11,8 @@ import ProtectedRoutes from "./components/security/ProtectedRoutes.jsx";
 import Hotel from "./pages/Hotel.jsx";
 import HotelDetails from "./pages/HotelDetails.jsx";
 import Booking from "./pages/Booking.jsx";
+import MyBookings from "./pages/MyBookings.jsx";
+import ScanQR from "./pages/ScanQR.jsx";
 function App() {
   return (
     <>
@@ -97,6 +99,22 @@ function App() {
               element={
                 <Pagetransition>
                   <Booking />
+                </Pagetransition>
+              }
+            />
+            <Route
+              path="/hotels/myBookings"
+              element={
+                <Pagetransition>
+                  <MyBookings />
+                </Pagetransition>
+              }
+            />
+            <Route
+              path="/scan-qr"
+              element={
+                <Pagetransition>
+                  <ScanQR />
                 </Pagetransition>
               }
             />
