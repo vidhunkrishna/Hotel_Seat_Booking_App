@@ -1,33 +1,136 @@
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { easeInOut, easeOut, motion } from "framer-motion";
 import { Calendar, Compass, TicketCheck, Utensils } from "lucide-react";
 import Goldenbutton from "../components/layout/goldenbutton.jsx";
+import NotificationBell from "../components/ui/NotificationBell.jsx";
+import { getMyBookings } from "../services/bookingservice.js";
+
+const formatShortDate = (dateValue) => {
+  if (!dateValue) return "";
+
+  const parsed =
+    typeof dateValue === "string" && /^\d{4}-\d{2}-\d{2}$/.test(dateValue)
+      ? new Date(`${dateValue}T00:00:00`)
+      : new Date(dateValue);
+
+  if (Number.isNaN(parsed.getTime())) return String(dateValue);
+
+  return parsed.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const formatTime = (time) => {
+  if (!time) return "";
+
+  const [hours, minutes] = time.split(":");
+  const date = new Date();
+  date.setHours(Number(hours), Number(minutes), 0, 0);
+
+  return date.toLocaleTimeString("en-IN", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
 
 function Dashboard() {
   const navigate = useNavigate();
+  const [bookings, setBookings] = useState([]);
+
+  const role = localStorage.getItem("role");
+  const isAdmin = role === "hotel_admin" || role === "super_admin";
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadBookings = async () => {
+      try {
+        const result = await getMyBookings();
+        const list = Array.isArray(result) ? result : result?.bookings || [];
+        if (isMounted) {
+          setBookings(list);
+        }
+      } catch {
+        // Keep default dashboard empty states if fetch fails
+      }
+    };
+
+    loadBookings();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     localStorage.removeItem("role");
     setTimeout(() => {
       navigate("/login");
     }, 1000);
   };
+
+  const todayStr = new Date().toISOString().split("T")[0];
+
+  const upcomingBookings = bookings
+    .filter(
+      (b) =>
+        (b.status === "Confirmed" || b.status === "Pending") &&
+        (!b.date || b.date >= todayStr),
+    )
+    .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+
+  const nextBooking = upcomingBookings[0] || null;
+  const confirmedCount = bookings.filter(
+    (b) => b.status === "Confirmed",
+  ).length;
+  const completedCount = bookings.filter(
+    (b) => b.status === "Completed",
+  ).length;
+
+  const latestBookingWithHotel = bookings.find(
+    (b) => typeof b.hotel === "object" && b.hotel?.name,
+  );
+
   return (
-    <>
-      <div className="bg-[#171717] w-full h-[54px] flex flex-row items-center ">
+    <div className="min-h-screen bg-[#F7F5F0] pb-6">
+      <div className="bg-[#171717] w-full h-[54px] flex flex-row items-center">
         <p className="text-white m-4 font-display">HotelSeatBooking</p>
 
-        <div className="flex ml-auto mr-4 text-white font-ui ">
-          <Link className="mr-4" to="/hotels">
+        <div className="flex items-center ml-auto mr-4 text-white font-ui">
+          <Link
+            className="mr-4 hover:text-[#C89B5A] transition-colors"
+            to="/hotels"
+          >
             Hotels
           </Link>
-          <Link className="mr-4" to="/bookings">
+          <Link
+            className="mr-4 hover:text-[#C89B5A] transition-colors"
+            to="/bookings"
+          >
             My Bookings
           </Link>
-          <Link className="mr-4" to="/notifications">
-            Notifications{" "}
-          </Link>
-          <Link className="mr-4" to="/profile">
+
+          {isAdmin && (
+            <Link
+              className="mr-4 hover:text-[#C89B5A] transition-colors"
+              to="/scan-qr"
+            >
+              Scan QR
+            </Link>
+          )}
+
+          <NotificationBell />
+
+          <Link
+            className="mr-4 hover:text-[#C89B5A] transition-colors"
+            to="/profile"
+          >
             Profile
           </Link>
 
@@ -131,13 +234,31 @@ function Dashboard() {
             </p>
           </div>
 
-          <div className="text-xl font-ui font-bold text-[#171717]">
-            No upcoming bookings
-          </div>
+          {nextBooking ? (
+            <>
+              <div className="text-xl font-ui font-bold text-[#171717] mt-1">
+                {typeof nextBooking.hotel === "object"
+                  ? nextBooking.hotel?.name
+                  : "Upcoming Reservation"}
+              </div>
 
-          <div className="text-base text-[#6B6B6B]">
-            Your next reservation will appear here.
-          </div>
+              <div className="text-base text-[#6B6B6B] mt-1">
+                {formatShortDate(nextBooking.date)} ·{" "}
+                {formatTime(nextBooking.startTime)} –{" "}
+                {formatTime(nextBooking.endTime)} ({nextBooking.status})
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="text-xl font-ui font-bold text-[#171717]">
+                No upcoming bookings
+              </div>
+
+              <div className="text-base text-[#6B6B6B]">
+                Your next reservation will appear here.
+              </div>
+            </>
+          )}
 
           <Goldenbutton name="View My Bookings" l="/bookings" />
         </motion.div>
@@ -159,10 +280,16 @@ function Dashboard() {
           </div>
 
           <div className="text-xl font-ui font-bold text-[#171717]">
-            Your Reservations
+            {bookings.length > 0
+              ? `${bookings.length} ${bookings.length === 1 ? "Reservation" : "Reservations"}`
+              : "Your Reservations"}
           </div>
 
-          <div className="text-base text-[#6B6B6B]">No reservations yet</div>
+          <div className="text-base text-[#6B6B6B]">
+            {bookings.length > 0
+              ? `${confirmedCount} confirmed · ${completedCount} completed`
+              : "No reservations yet"}
+          </div>
         </motion.div>
 
         <motion.div
@@ -182,11 +309,15 @@ function Dashboard() {
           </div>
 
           <div className="text-xl font-ui font-bold text-[#171717]">
-            Your Dining Journey
+            {latestBookingWithHotel
+              ? latestBookingWithHotel.hotel.name
+              : "Your Dining Journey"}
           </div>
 
           <div className="text-base text-[#6B6B6B]">
-            Start exploring hotels to build your reservation history.
+            {latestBookingWithHotel
+              ? `Last reserved on ${formatShortDate(latestBookingWithHotel.date)}`
+              : "Start exploring hotels to build your reservation history."}
           </div>
         </motion.div>
 
@@ -215,7 +346,7 @@ function Dashboard() {
           <Goldenbutton name="Explore Hotels" l="/hotels" />
         </motion.div>
       </div>
-    </>
+    </div>
   );
 }
 

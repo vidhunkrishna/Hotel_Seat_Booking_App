@@ -1,6 +1,6 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { registerapi } from "../services/authservice.js";
 
 function Register() {
@@ -9,7 +9,7 @@ function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const navigate = useNavigate();
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -21,6 +21,7 @@ function Register() {
       });
 
       console.log("Registration successful:", data);
+      setTimeout(() => navigate("/login"), 2000);
     } catch (error) {
       console.error("Registration failed:", error);
     }
