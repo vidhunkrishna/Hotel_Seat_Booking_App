@@ -58,7 +58,7 @@ export default function Home() {
             >
               Reserve your favorite table at premium hotels.
             </motion.p>
-            <Goldenbutton name="Explore Hotels" />
+            <Goldenbutton name="Explore Hotels" l="/hotels" />
           </div>
         </div>
       </div>
@@ -214,7 +214,7 @@ export default function Home() {
             reservation with ease.
           </p>
 
-          <Goldenbutton name="Explore Hotels" />
+          <Goldenbutton name="Explore Hotels" l="/hotels" />
         </motion.div>
       </section>
     </>

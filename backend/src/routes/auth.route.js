@@ -8,6 +8,8 @@ import {
   getUserById,
   updateUserRole,
   deleteUser,
+  RefreshAccessToken,
+  logoutUser,
 } from "../controllers/auth.controller.js";
 import { authmiddleware } from "../middleware/auth.authentication.middleware.js";
 import { authorizationmiddleware } from "../middleware/auth.authorization.middlewire.js";
@@ -17,7 +19,8 @@ router.post("/auth/register", registerUser);
 router.post("/auth/login", loginUser);
 router.get("/auth/me", authmiddleware, getUser);
 router.get("/users/me", authmiddleware, getUser);
-
+router.post("/auth/refresh", RefreshAccessToken);
+router.post("/auth/logout", logoutUser);
 router.patch("/users/me", authmiddleware, updateMyUser);
 
 router.get(

@@ -5,6 +5,7 @@ import { Calendar, Compass, TicketCheck, Utensils } from "lucide-react";
 import Goldenbutton from "../components/layout/goldenbutton.jsx";
 import NotificationBell from "../components/ui/NotificationBell.jsx";
 import { getMyBookings } from "../services/bookingservice.js";
+import { logout } from "@/utils/auth.js";
 
 const formatShortDate = (dateValue) => {
   if (!dateValue) return "";
@@ -54,8 +55,8 @@ function Dashboard() {
         if (isMounted) {
           setBookings(list);
         }
-      } catch {
-        // Keep default dashboard empty states if fetch fails
+      } catch (err) {
+        console.log(err);
       }
     };
 
@@ -66,13 +67,14 @@ function Dashboard() {
     };
   }, []);
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("role");
-    setTimeout(() => {
-      navigate("/login");
-    }, 1000);
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error("Logout failed:", error);
+      alert("Unable to log out. Please try again.");
+    }
   };
 
   const todayStr = new Date().toISOString().split("T")[0];
@@ -124,6 +126,14 @@ function Dashboard() {
               Scan QR
             </Link>
           )}
+          {isAdmin && (
+            <Link
+              className="mr-4 hover:text-[#C89B5A] transition-colors"
+              to="/analytics"
+            >
+              Analytics
+            </Link>
+          )}
 
           <NotificationBell />
 
@@ -136,7 +146,7 @@ function Dashboard() {
 
           <button
             className="cursor-pointer hover:text-yellow-600"
-            onClick={() => logout()}
+            onClick={() => handleLogout}
           >
             Logout
           </button>

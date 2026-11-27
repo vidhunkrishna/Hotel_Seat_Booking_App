@@ -7,6 +7,8 @@ import {
   GetUserById,
   UpdateUserRole,
   DeleteUser,
+  refreshAccessToken,
+  LogoutUser,
 } from "../services/auth.service.js";
 export const registerUser = async (req, res) => {
   const data = await RegisterUser(req.body);
@@ -15,7 +17,14 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   const data = await LoginUser(req.body);
   if (data) {
-    res.status(200).json(data);
+    res.cookie("refreshToken", data.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/api/auth",
+    });
+    res.status(200).json({ user: data.user, token: data.token });
   } else {
     res.status(401).json({
       message: "Invalid email or password",
@@ -98,6 +107,48 @@ export const deleteUser = async (req, res) => {
   } catch (error) {
     res.status(400).json({
       message: error.message,
+    });
+  }
+};
+export const RefreshAccessToken = async (req, res) => {
+  const token = req.cookies.refreshToken;
+  const data = await refreshAccessToken(token);
+  if (!data) {
+    return res.status(401).json({
+      message: "Session expired.Please log in again",
+    });
+  }
+  const remainingTime = new Date(data.expiresAt).getTime() - Date.now();
+  res.cookie("refreshToken", data.refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: remainingTime,
+    path: "/api/auth",
+  });
+  return res.status(200).json({ token: data.token });
+};
+export const logoutUser = async (req, res) => {
+  try {
+    const token = req.cookies?.refreshToken;
+
+    await LogoutUser(token);
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/api/auth",
+    });
+
+    return res.status(200).json({
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Unable to logout",
     });
   }
 };

@@ -1,3 +1,4 @@
+
 import { hotelModel } from "../models/hotel.model.js";
 
 export const AddHotel = async (adminId, data) => {
@@ -56,4 +57,14 @@ export const DeleteHotel = async (userId, userRole, id) => {
   }
 
   return await hotelModel.deleteOne({ _id: id });
+};
+
+export const GetManagedHotel = async (userId, userRole) => {
+  if (userRole === "super_admin") {
+    return hotelModel.find();
+  } else if (userRole === "hotel_admin") {
+    return hotelModel.find({ admin: userId });
+  } else {
+    throw new Error("Access Denied");
+  }
 };

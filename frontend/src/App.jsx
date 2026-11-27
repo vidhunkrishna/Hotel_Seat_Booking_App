@@ -13,6 +13,8 @@ import HotelDetails from "./pages/HotelDetails.jsx";
 import Booking from "./pages/Booking.jsx";
 import MyBookings from "./pages/MyBookings.jsx";
 import ScanQR from "./pages/ScanQR.jsx";
+import Analytics from "./pages/Analytics.jsx";
+import ManageHotels from "./pages/Admin/ManageHotels.jsx";
 function App() {
   return (
     <>
@@ -73,7 +75,7 @@ function App() {
               path="/bookings"
               element={
                 <Pagetransition>
-                  <Hotel />
+                  <MyBookings />
                 </Pagetransition>
               }
             />
@@ -93,7 +95,14 @@ function App() {
                 </Pagetransition>
               }
             />
-            <Route path="/hotels/:id/tables" element={<Tables />} />
+            <Route
+              path="/hotels/:id/tables"
+              element={
+                <Pagetransition>
+                  <Tables />
+                </Pagetransition>
+              }
+            />
             <Route
               path="/hotels/booking"
               element={
@@ -111,14 +120,39 @@ function App() {
               }
             />
             <Route
-              path="/scan-qr"
               element={
-                <Pagetransition>
-                  <ScanQR />
-                </Pagetransition>
+                <ProtectedRoutes
+                  allowedRoles={["hotel_admin", "super_admin"]}
+                />
               }
-            />
+            >
+              <Route
+                path="/scan-qr"
+                element={
+                  <Pagetransition>
+                    <ScanQR />
+                  </Pagetransition>
+                }
+              />
+              <Route
+                path="/analytics"
+                element={
+                  <Pagetransition>
+                    <Analytics />
+                  </Pagetransition>
+                }
+              />
+              <Route
+                path="/managehotels"
+                element={
+                  <Pagetransition>
+                    <ManageHotels />
+                  </Pagetransition>
+                }
+              />
+            </Route>
           </Route>
+          <Route path="*" element={<h1>404 - Page Not Found</h1>} />
         </Routes>
       </BrowserRouter>
     </>

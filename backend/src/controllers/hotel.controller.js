@@ -4,6 +4,7 @@ import {
   GetHotelById,
   PatchHotelById,
   DeleteHotel,
+  GetManagedHotel,
 } from "../services/hotel.service.js";
 
 export const addHotel = async (req, res) => {
@@ -75,6 +76,18 @@ export const deleteHotel = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Failed to delete hotel",
+      error: error.message,
+    });
+  }
+};
+export const getManagedHotel = async (req, res) => {
+  try {
+    const data = await GetManagedHotel(req.user.userId, req.user.role);
+
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch hotels",
       error: error.message,
     });
   }

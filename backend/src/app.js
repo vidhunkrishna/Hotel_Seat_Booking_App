@@ -9,10 +9,17 @@ import { notificationRouter } from "./routes/notifications.route.js";
 import { paymentsRouter } from "./routes/payments.route.js";
 import { qrRouter } from "./routes/qr.route.js";
 import { analyticsRouter } from "./routes/analytics.route.js";
-import morgon from "express";
+import morgon from "morgan";
+import cookieParser from "cookie-parser";
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
 app.use(express.json());
+app.use(cookieParser());
 app.use(morgon("dev"));
 app.use("/api", router);
 app.use("/api/hotels", hotelRouter);

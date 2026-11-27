@@ -9,6 +9,7 @@ import {
   getHotelbyId,
   patchHotelById,
   deleteHotel,
+  getManagedHotel,
 } from "../controllers/hotel.controller.js";
 
 export const hotelRouter = Router();
@@ -21,7 +22,12 @@ hotelRouter.post(
 );
 
 hotelRouter.get("/", getHotels);
-
+hotelRouter.get(
+  "/managed",
+  authmiddleware,
+  authorizationmiddleware("hotel_admin", "super_admin"),
+  getManagedHotel,
+);
 hotelRouter.get("/:id", getHotelbyId);
 
 hotelRouter.patch(
